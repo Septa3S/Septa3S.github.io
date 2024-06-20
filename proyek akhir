@@ -1,0 +1,105 @@
+import 'dart:io';
+
+class Jadwal {
+  String namaKucing;
+  String tanggal;
+  String waktu;
+
+  Jadwal(this.namaKucing, this.tanggal, this.waktu);
+
+  String toString() {
+    return 'Kucing: $namaKucing, Tanggal: $tanggal, Waktu: $waktu';
+  }
+}
+
+class ManajemenJadwalMandiKucing {
+  List<Jadwal> jadwal;
+  List<Jadwal> tumpukanUndo;
+
+  ManajemenJadwalMandiKucing()
+      : jadwal = [],
+        tumpukanUndo = [];
+
+  void tambahJadwal(String namaKucing, String tanggal, String waktu) {
+    Jadwal jadwalBaru = Jadwal(namaKucing, tanggal, waktu);
+    jadwal.add(jadwalBaru);
+    print('Jadwal berhasil ditambahkan.');
+  }
+
+  void hapusJadwal(String namaKucing) {
+    Jadwal? yangDihapus;
+    for (var j in jadwal) {
+      if (j.namaKucing == namaKucing) {
+        yangDihapus = j;
+        break;
+      }
+    }
+
+    if (yangDihapus != null) {
+      jadwal.remove(yangDihapus);
+      tumpukanUndo.add(yangDihapus);
+      print('Jadwal untuk $namaKucing berhasil dihapus.');
+    } else {
+      print('Jadwal untuk $namaKucing tidak ditemukan.');
+    }
+  }
+
+  void undoHapus() {
+    if (tumpukanUndo.isNotEmpty) {
+      Jadwal terakhirDihapus = tumpukanUndo.removeLast();
+      jadwal.add(terakhirDihapus);
+      print('Penghapusan jadwal untuk ${terakhirDihapus.namaKucing} di-undo.');
+    } else {
+      print('Tidak ada jadwal yang bisa di-undo.');
+    }
+  }
+
+  void lihatJadwal() {
+    if (jadwal.isEmpty) {
+      print('Tidak ada jadwal yang tersedia.');
+    } else {
+      print('Jadwal memandikan kucing:');
+      for (var j in jadwal) {
+        print(j);
+      }
+    }
+  }
+}
+
+void main() {
+  ManajemenJadwalMandiKucing manajemenJadwal = ManajemenJadwalMandiKucing();
+
+  while (true) {
+    print('\nManajemen Penjadwalan Memandikan Kucing');
+    print('1. Tambah Jadwal');
+    print('2. Hapus Jadwal');
+    print('3. Undo Hapus Jadwal');
+    print('4. Lihat Jadwal');
+    print('5. Keluar');
+    stdout.write('Pilih opsi (1-5): ');
+    String pilihan = stdin.readLineSync() ?? '';
+
+    if (pilihan == '1') {
+      stdout.write('Nama Kucing: ');
+      String namaKucing = stdin.readLineSync() ?? '';
+      stdout.write('Tanggal (YYYY-MM-DD): ');
+      String tanggal = stdin.readLineSync() ?? '';
+      stdout.write('Waktu (HH:MM): ');
+      String waktu = stdin.readLineSync() ?? '';
+      manajemenJadwal.tambahJadwal(namaKucing, tanggal, waktu);
+    } else if (pilihan == '2') {
+      stdout.write('Nama Kucing yang akan dihapus jadwalnya: ');
+      String namaKucingDihapus = stdin.readLineSync() ?? '';
+      manajemenJadwal.hapusJadwal(namaKucingDihapus);
+    } else if (pilihan == '3') {
+      manajemenJadwal.undoHapus();
+    } else if (pilihan == '4') {
+      manajemenJadwal.lihatJadwal();
+    } else if (pilihan == '5') {
+      print('Keluar dari program.');
+      break;
+    } else {
+      print('Pilihan tidak valid. Silakan pilih opsi yang tersedia.');
+    }
+  }
+}
